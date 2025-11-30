@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import sys, os, json, subprocess, time, base64
-from typing import Optional
 import requests
+from typing import Optional
 from PySide6.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout,
     QHBoxLayout, QCheckBox, QDialog, QTextEdit, QMessageBox, QFileDialog, QInputDialog
@@ -17,10 +17,10 @@ USER_AGENT = "ZamVRChatTool/1.0 (contact: VrSWAPPERCuteZam)"
 # -----------------------
 # Utility Functions
 # -----------------------
-def save_cookie(auth_cookie, target_user_id=None):
+def save_cookie(auth_cookie, user_id=None):
     data = {"auth": auth_cookie}
-    if target_user_id:
-        data["target_user_id"] = target_user_id
+    if user_id:
+        data["user_id"] = user_id
     with open(COOKIE_FILE, "w") as f:
         json.dump(data, f)
 
@@ -28,7 +28,7 @@ def load_cookie():
     if os.path.exists(COOKIE_FILE):
         with open(COOKIE_FILE, "r") as f:
             data = json.load(f)
-            return data.get("auth"), data.get("target_user_id")
+            return data.get("auth"), data.get("user_id")
     return None, None
 
 def test_cookie(auth_cookie):
@@ -110,7 +110,9 @@ class LoginDialog(QDialog):
             # Save session cookie
             cookie = session.cookies.get("auth")
             if cookie:
-                save_cookie(cookie)
+                # fetch user id automatically
+                user_id = data.get("id")
+                save_cookie(cookie, user_id)
                 self.auth_cookie = cookie
                 self.accept()
             else:
@@ -138,17 +140,17 @@ class LauncherThread(QThread):
 # -----------------------
 class FetchInstanceThread(QThread):
     fetched = Signal(str)
-    def __init__(self, auth_cookie: str, target_user_id: str):
+    def __init__(self, auth_cookie: str, user_id: str):
         super().__init__()
         self.auth_cookie = auth_cookie
-        self.target_user_id = target_user_id
+        self.user_id = user_id
 
     def run(self):
         try:
             session = requests.Session()
             session.cookies.set("auth", self.auth_cookie)
             session.headers.update({"User-Agent": USER_AGENT})
-            url = f"https://api.vrchat.cloud/api/1/users/{self.target_user_id}"
+            url = f"https://api.vrchat.cloud/api/1/users/{self.user_id}"
             res = session.get(url)
             if res.status_code == 200:
                 data = res.json()
@@ -163,9 +165,9 @@ class FetchInstanceThread(QThread):
 # Main Window
 # -----------------------
 class MainWindow(QWidget):
-    def __init__(self, cookie: str, saved_user_id: Optional[str] = None):
+    def __init__(self, cookie: str, user_id: str):
         super().__init__()
-        self.setWindowTitle("VR/Desktop Swapper")
+        self.setWindowTitle("VR/Desktop Switcher By Zam")
         self.resize(600, 450)
         self.setStyleSheet("""
             QWidget { background-color: #1E1E2F; color: white; font-size: 14px; }
@@ -177,6 +179,7 @@ class MainWindow(QWidget):
             QLabel#status { font-weight: bold; }
         """)
         self.auth_cookie = cookie
+        self.user_id = user_id
         self.current_instance = None
 
         layout = QVBoxLayout()
@@ -190,15 +193,6 @@ class MainWindow(QWidget):
         path_layout.addWidget(self.browse_btn)
         layout.addLayout(path_layout)
 
-        # Target user ID input
-        id_layout = QHBoxLayout()
-        id_layout.addWidget(QLabel("Target User ID:"))
-        self.target_user_input = QLineEdit()
-        if saved_user_id:
-            self.target_user_input.setText(saved_user_id)
-        id_layout.addWidget(self.target_user_input)
-        layout.addLayout(id_layout)
-
         # Status
         self.status_label = QLabel("Fetching instance...")
         self.status_label.setObjectName("status")
@@ -209,7 +203,7 @@ class MainWindow(QWidget):
         layout.addWidget(self.instance_label)
 
         # Fetch instance button
-        self.fetch_instance_btn = QPushButton("Fetch Current Location")
+        self.fetch_instance_btn = QPushButton("Get Current Instance")
         layout.addWidget(self.fetch_instance_btn)
         self.fetch_instance_btn.clicked.connect(self.update_instance)
 
@@ -240,7 +234,7 @@ class MainWindow(QWidget):
         self.launch_vrchat_btn.clicked.connect(self.launch_vrchat)
         self.console_toggle_btn.clicked.connect(self.toggle_console)
 
-        # Start fetching instance automatically if ID is filled
+        # Start fetching instance automatically
         self.update_instance()
 
     # -----------------------
@@ -285,32 +279,30 @@ class MainWindow(QWidget):
     # Instance fetching
     # -----------------------
     def update_instance(self):
-        user_id = self.target_user_input.text().strip()
-        if not user_id:
+        if not self.user_id:
             self.current_instance = None
             self.instance_label.setText("Current Location: None")
             self.status_label.setText("Not Ready!")
             self.status_label.setStyleSheet("color: red; font-weight: bold;")
             return
-        self.log(f"Fetching current instance for {user_id}...")
-        self.fetch_thread = FetchInstanceThread(self.auth_cookie, user_id)
+        self.log(f"Fetching current instance for {self.user_id}...")
+        self.fetch_thread = FetchInstanceThread(self.auth_cookie, self.user_id)
         self.fetch_thread.fetched.connect(self.on_instance_fetched)
         self.fetch_thread.start()
 
     def on_instance_fetched(self, loc):
-        user_id = self.target_user_input.text().strip()
         if loc and loc != "":
             self.current_instance = loc
             self.instance_label.setText(f"Current Location: {self.current_instance}")
             self.status_label.setText("Ready!")
             self.status_label.setStyleSheet("color: lime; font-weight: bold;")
-            save_cookie(self.auth_cookie, user_id)  # Save user ID
+            save_cookie(self.auth_cookie, self.user_id)
         else:
             self.current_instance = None
             self.instance_label.setText("Current Location: None")
             self.status_label.setText("Not Ready!")
             self.status_label.setStyleSheet("color: red; font-weight: bold;")
-            QTimer.singleShot(10000, self.update_instance)  # retry in 10s
+            QTimer.singleShot(10000, self.update_instance)  # retry
 
 # -----------------------
 # Entry Point
@@ -329,11 +321,36 @@ def main():
 
     cookie, saved_user_id = load_cookie()
     if cookie and test_cookie(cookie):
+        # fetch user id from auth endpoint if not saved
+        if not saved_user_id:
+            try:
+                session = requests.Session()
+                session.cookies.set("auth", cookie)
+                session.headers.update({"User-Agent": USER_AGENT})
+                res = session.get("https://api.vrchat.cloud/api/1/auth/user")
+                if res.status_code == 200:
+                    saved_user_id = res.json().get("id")
+                    save_cookie(cookie, saved_user_id)
+            except:
+                saved_user_id = None
         main_win = MainWindow(cookie, saved_user_id)
     else:
         login = LoginDialog()
         if login.exec() == QDialog.Accepted:
-            main_win = MainWindow(login.auth_cookie, login.user_input.text().strip())
+            # fetch user id from auth endpoint
+            session = requests.Session()
+            session.cookies.set("auth", login.auth_cookie)
+            session.headers.update({"User-Agent": USER_AGENT})
+            try:
+                res = session.get("https://api.vrchat.cloud/api/1/auth/user")
+                if res.status_code == 200:
+                    user_id = res.json().get("id")
+                else:
+                    user_id = None
+            except:
+                user_id = None
+            save_cookie(login.auth_cookie, user_id)
+            main_win = MainWindow(login.auth_cookie, user_id)
         else:
             sys.exit()
 
