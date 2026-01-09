@@ -6,5 +6,4 @@ For Vrchat easily Swap from desktop to VR or vise versa While Keeping your spot 
 Cant upload exe here above the 25mb limit for github 
 
 compile it yourself using Auto-py-to-exe or use this 
-
-https://drive.google.com/file/d/1gppO2drLG0a9icXGja8yeeuMLvte9Jar/view?usp=sharing
+ https://drive.google.com/file/d/1nq8tXAgg5atEHtYR7tJU1CuASWkcjL4-/view?usp=sharing
