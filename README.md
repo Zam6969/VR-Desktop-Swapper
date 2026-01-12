@@ -1,4 +1,4 @@
-# VRChat Vr Swap tool
+# VRChat VRtoDesktop or DestoptoVR tool
 
 Seamlessly switch between **Desktop** and **VR** in VRChat **without losing your spot** in an instance — even when the instance has a **large queue**.
 
@@ -38,6 +38,19 @@ You can compile the project locally using **Auto‑Py‑to‑Exe**:
 3. Select the main Python file
 4. Choose **One File** mode
 5. Click **Convert**
+
+---
+
+## ▶️ How to Use
+
+1. 🔐 Log in to your **VRChat account**
+2. 📂 Set the location of your **`launch.exe`** for VRChat
+3. 📍 Make sure the app shows the **correct instance** you’re trying to join
+4. 🖥️ If switching to **Desktop mode**, check the **Desktop** checkbox
+5. 🥽 If switching to **VR mode**, **launch SteamVR first**
+6. 🚀 Launch VRChat from the tool
+7. ⏳ Wait until the first VRChat client displays the message that you **can’t have two people in the same room**
+8. 💰 Profit 😎
 
 ---
 
