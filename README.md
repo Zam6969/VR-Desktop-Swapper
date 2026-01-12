@@ -80,23 +80,6 @@ Then:
 
 ---
 
-## 📦 Python Requirements
-
-If you are compiling the tool yourself, install the required Python dependencies first:
-
-```bash
-pip install -r requirements.txt
-```
-
-**requirements.txt**
-
-```txt
-requests>=2.31.0
-PySide6>=6.6.0
-```
-
----
-
 ## 🖥️ Requirements
 
 * Windows
