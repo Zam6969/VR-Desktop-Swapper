@@ -1,4 +1,4 @@
-# VRChat Instance Swap Tool
+# VRChat Vr Swap tool
 
 Seamlessly switch between **Desktop** and **VR** in VRChat **without losing your spot** in an instance — even when the instance has a **large queue**.
 
