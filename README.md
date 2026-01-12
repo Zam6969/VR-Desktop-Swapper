@@ -1,4 +1,4 @@
-# VRChat VRtoDesktop or DestoptoVR tool
+# **VRChat VRtoDesktop or DestoptoVR tool**
 
 Seamlessly switch between **Desktop** and **VR** in VRChat **without losing your spot** in an instance — even when the instance has a **large queue**.
 
@@ -19,25 +19,51 @@ Seamlessly switch between **Desktop** and **VR** in VRChat **without losing your
 
 ### Option 1 — Download Prebuilt EXE (Recommended)
 
-👉 **[Download from Google Drive](https://drive.google.com/file/d/1VH6s_yvkAf0hTpjW5_7mphsrDc4WNUQL/view?usp=sharing)**
+👉 [**Download from Google Drive**](https://drive.google.com/file/d/1VH6s_yvkAf0hTpjW5_7mphsrDc4WNUQL/view?usp=sharing)
 
 ### Option 2 — Compile It Yourself
 
-You can compile the project locally using **Auto‑Py‑to‑Exe**:
+You can compile the project locally using **Auto-Py-to-Exe**.
 
-1. Install Auto‑Py‑to‑Exe
+#### 1️⃣ Python Version
 
-   ```bash
-   pip install auto-py-to-exe
-   ```
-2. Run the tool
+This project was developed and tested using **Python 3.14**.
 
-   ```bash
-   auto-py-to-exe
-   ```
-3. Select the main Python file
-4. Choose **One File** mode
-5. Click **Convert**
+> ⚠️ If you use a different Python version, behavior is not guaranteed.
+
+#### 2️⃣ Install Python Requirements
+
+First, install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+**requirements.txt**
+
+```txt
+requests>=2.31.0
+PySide6>=6.6.0
+```
+
+#### 2️⃣ Install Auto-Py-to-Exe
+
+```bash
+pip install auto-py-to-exe
+```
+
+#### 3️⃣ Build the Executable
+
+```bash
+auto-py-to-exe
+```
+
+Then:
+
+1. Select the main Python file
+2. Choose **One File** mode
+3. (Optional) Enable **Window Based (Hide Console)**
+4. Click **Convert**
 
 ---
 
@@ -51,6 +77,23 @@ You can compile the project locally using **Auto‑Py‑to‑Exe**:
 6. 🚀 Launch VRChat from the tool
 7. ⏳ Wait until the first VRChat client displays the message that you **can’t have two people in the same room**
 8. 💰 Profit 😎
+
+---
+
+## 📦 Python Requirements
+
+If you are compiling the tool yourself, install the required Python dependencies first:
+
+```bash
+pip install -r requirements.txt
+```
+
+**requirements.txt**
+
+```txt
+requests>=2.31.0
+PySide6>=6.6.0
+```
 
 ---
 
